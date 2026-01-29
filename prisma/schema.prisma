@@ -15,8 +15,8 @@ model User {
   password  String
   image     String?  // <-- User ki profile photo ke liye URL
   role      Role     @default(USER)
-  bookings  Booking[]
   createdAt DateTime @default(now())
+  bookings Booking[]
 }
 
 // 2. Bike Model
@@ -43,8 +43,10 @@ model Booking {
   startTime  DateTime
   endTime    DateTime
   totalPrice Float
-  status     String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
-  
+  status     String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED
+  createdAt  DateTime @default(now())
+
+  // Relations - Linking Booking to User and Bike
   user       User     @relation(fields: [userId], references: [id])
   bike       Bike     @relation(fields: [bikeId], references: [id])
 }
