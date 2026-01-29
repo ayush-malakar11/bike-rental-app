@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. User Model (Admin aur Normal User dono isi mein honge)
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  image     String?  // <-- User ki profile photo ke liye URL
+  role      Role     @default(USER)
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+}
+
+// 2. Bike Model
+model Bike {
+  id           Int       @id @default(autoincrement())
+  modelName    String
+  brand        String
+  pricePerHour Float
+  imageUrl     String?
+  isAvailable  Boolean   @default(true)
+  
+  // Add these two lines for professional tracking
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings     Booking[]
+}
+
+// 3. Booking Model
+model Booking {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  bikeId     Int
+  startTime  DateTime
+  endTime    DateTime
+  totalPrice Float
+  status     String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  
+  user       User     @relation(fields: [userId], references: [id])
+  bike       Bike     @relation(fields: [bikeId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
