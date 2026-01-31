@@ -2,19 +2,66 @@ import { prisma } from "@/lib/prisma";
 import BikeCard from "@/components/BikeCard";
 // import Navbar from "@/components/Navbar";
 
-async function getBikes() {
-  // Fetching bikes directly from MySQL via Prisma
+async function getBikes(searchParams: { brand?: string; search?: string }) {
+  const { brand, search } = searchParams;
+
   const bikes = await prisma.bike.findMany({
+    where: {
+      isAvailable: true,
+      // Filtering logic
+      AND: [
+        brand ? { brand: { equals: brand } } : {},
+        search ? {
+          OR: [
+            { modelName: { contains: search } },
+            { brand: { contains: search } }
+          ]
+        } : {}
+      ]
+    },
     orderBy: { createdAt: "desc" },
   });
   return bikes;
 }
 
-export default async function HomePage() {
-  const bikes = await getBikes();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ brand?: string; search?: string }>;
+}) {
+  const params = await searchParams;
+  const bikes = await getBikes(params);
+  console.log(bikes)
 
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* Search & Filter Bar */}
+      <div className="max-w-7xl mx-auto px-4 pt-8 flex flex-col md:flex-row gap-4">
+        <form className="flex-1 flex gap-2">
+          <input
+            name="search"
+            type="text"
+            placeholder="Search bike model..."
+            className="w-full p-2.5 border rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
+            Search
+          </button>
+        </form>
+
+        <select
+          name="brand"
+          className="p-2.5 border rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
+        // In a real app, we use a 'onChange' to trigger search, 
+        // but for now, we'll keep it simple with a form submit.
+        >
+          <option value="">All Brands</option>
+          <option value="Kawasaki">Kawasaki</option>
+          <option value="Yamaha">Yamaha</option>
+          <option value="Royal Enfield">Royal Enfield</option>
+        </select>
+      </div>
+
       {/* Hero Section */}
       <div className="bg-blue-600 py-16 px-4 text-center text-white">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -36,7 +83,7 @@ export default async function HomePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {bikes.map((bike) => (
-              <BikeCard key={bike.id} bike={bike} />
+              < BikeCard key={bike.id} bike={bike} />
             ))}
           </div>
         )}
