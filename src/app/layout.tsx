@@ -1,17 +1,18 @@
 import { AuthProvider } from "@/components/AuthProvider";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar"; // Import Navbar
+import Footer from "@/components/Footer"; // Import Footer
+import "./globals.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className="antialiased">
         <AuthProvider>
-          <Navbar />
+          <Navbar /> {/* Yahan add karein */}
           <main className="min-h-screen">
             {children}
           </main>
-          <Footer />
+          <Footer /> {/* Yahan add karein */}
         </AuthProvider>
       </body>
     </html>

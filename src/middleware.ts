@@ -20,5 +20,6 @@ export default withAuth(
 
 // Ye middleware sirf in pages par chalega
 export const config = {
-    matcher: ["/dashboard/:path*", "/admin/:path*"]
+    // matcher mein /dashboard aur /api/bookings ko bhi secure karein
+    matcher: ["/admin/:path*", "/dashboard/:path*", "/api/bookings/:path*"],
 };

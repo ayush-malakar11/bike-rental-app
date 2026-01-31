@@ -1,26 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --primary-blue: #2563eb;
-}
+@import "tailwindcss";
 
 body {
   @apply bg-gray-50 text-gray-900;
-  font-family: 'Inter', sans-serif;
-  /* Make sure to import Inter font */
+  font-family: 'Inter', sans-serif; /* Modern font use karein */
 }
 
-/* Custom Scrollbar for a premium feel */
-::-webkit-scrollbar {
-  width: 8px;
+/* Premium Card Hover Effect */
+.bike-card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-::-webkit-scrollbar-track {
-  @apply bg-gray-100;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-blue-200 rounded-full hover:bg-blue-300;
+.bike-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
