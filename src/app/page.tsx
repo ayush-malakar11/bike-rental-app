@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import BikeCard from "@/components/BikeCard";
+import BrandFilter from "@/components/BrandFilter";
 // import Navbar from "@/components/Navbar";
 
 async function getBikes(searchParams: { brand?: string; search?: string }) {
@@ -24,42 +25,33 @@ async function getBikes(searchParams: { brand?: string; search?: string }) {
   return bikes;
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ brand?: string; search?: string }>;
-}) {
+export default async function HomePage({ searchParams }: any) {
   const params = await searchParams;
   const bikes = await getBikes(params);
-  console.log(bikes)
+
+  // Database se saare unique brands nikalna (Industry Standard)
+  const allBikes = await prisma.bike.findMany({ select: { brand: true } });
+  const uniqueBrands = Array.from(new Set(allBikes.map((b) => b.brand)));
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Search & Filter Bar */}
       <div className="max-w-7xl mx-auto px-4 pt-8 flex flex-col md:flex-row gap-4">
+        {/* Search Form */}
         <form className="flex-1 flex gap-2">
           <input
             name="search"
+            defaultValue={params.search}
             type="text"
             placeholder="Search bike model..."
-            className="w-full p-2.5 border rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2.5 border rounded-lg shadow-sm"
           />
           <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
             Search
           </button>
         </form>
 
-        <select
-          name="brand"
-          className="p-2.5 border rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
-        // In a real app, we use a 'onChange' to trigger search, 
-        // but for now, we'll keep it simple with a form submit.
-        >
-          <option value="">All Brands</option>
-          <option value="Kawasaki">Kawasaki</option>
-          <option value="Yamaha">Yamaha</option>
-          <option value="Royal Enfield">Royal Enfield</option>
-        </select>
+        {/* Dynamic Client Side Filter */}
+        <BrandFilter brands={uniqueBrands} />
       </div>
 
       {/* Hero Section */}
