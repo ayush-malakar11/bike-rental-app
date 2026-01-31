@@ -4,22 +4,21 @@ import { NextResponse } from "next/server";
 export default withAuth(
     function middleware(req) {
         const token = req.nextauth.token;
-        const path = req.nextUrl.pathname;
+        const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
 
-        // 1. If user is trying to access /admin but is not an ADMIN
-        if (path.startsWith("/admin") && token?.role !== "ADMIN") {
+        // Agar Admin page hai aur user Admin nahi hai, toh use Home par bhej do
+        if (isAdminPage && token?.role !== "ADMIN") {
             return NextResponse.redirect(new URL("/", req.url));
         }
     },
     {
         callbacks: {
-            // Middleware only runs if authorized returns true
-            authorized: ({ token }) => !!token,
+            authorized: ({ token }) => !!token, // Agar token nahi hai (login nahi hai), toh login page par bhej dega
         },
     }
 );
 
-// 2. Define which paths are protected
+// Ye middleware sirf in pages par chalega
 export const config = {
-    matcher: ["/admin/:path*", "/bookings/:path*", "/profile/:path*"],
+    matcher: ["/dashboard/:path*", "/admin/:path*"]
 };
