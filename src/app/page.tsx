@@ -1,20 +1,59 @@
 import { prisma } from "@/lib/prisma";
 import BikeCard from "@/components/BikeCard";
+import BrandFilter from "@/components/BrandFilter";
 // import Navbar from "@/components/Navbar";
 
-async function getBikes() {
-  // Fetching bikes directly from MySQL via Prisma
+async function getBikes(searchParams: { brand?: string; search?: string }) {
+  const { brand, search } = searchParams;
+
   const bikes = await prisma.bike.findMany({
+    where: {
+      isAvailable: true,
+      // Filtering logic
+      AND: [
+        brand ? { brand: { equals: brand } } : {},
+        search ? {
+          OR: [
+            { modelName: { contains: search } },
+            { brand: { contains: search } }
+          ]
+        } : {}
+      ]
+    },
     orderBy: { createdAt: "desc" },
   });
   return bikes;
 }
 
-export default async function HomePage() {
-  const bikes = await getBikes();
+export default async function HomePage({ searchParams }: any) {
+  const params = await searchParams;
+  const bikes = await getBikes(params);
+
+  // Database se saare unique brands nikalna (Industry Standard)
+  const allBikes = await prisma.bike.findMany({ select: { brand: true } });
+  const uniqueBrands = Array.from(new Set(allBikes.map((b) => b.brand)));
 
   return (
     <main className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 pt-8 flex flex-col md:flex-row gap-4">
+        {/* Search Form */}
+        <form className="flex-1 flex gap-2">
+          <input
+            name="search"
+            defaultValue={params.search}
+            type="text"
+            placeholder="Search bike model..."
+            className="w-full p-2.5 border rounded-lg shadow-sm"
+          />
+          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
+            Search
+          </button>
+        </form>
+
+        {/* Dynamic Client Side Filter */}
+        <BrandFilter brands={uniqueBrands} />
+      </div>
+
       {/* Hero Section */}
       <div className="bg-blue-600 py-16 px-4 text-center text-white">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -36,7 +75,7 @@ export default async function HomePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {bikes.map((bike) => (
-              <BikeCard key={bike.id} bike={bike} />
+              < BikeCard key={bike.id} bike={bike} />
             ))}
           </div>
         )}
