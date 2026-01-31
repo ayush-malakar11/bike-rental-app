@@ -2,13 +2,15 @@
 
 body {
   @apply bg-gray-50 text-gray-900;
-  font-family: 'Inter', sans-serif; /* Modern font use karein */
+  font-family: 'Inter', sans-serif;
+  /* Modern font use karein */
 }
 
 /* Premium Card Hover Effect */
 .bike-card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .bike-card-hover:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
