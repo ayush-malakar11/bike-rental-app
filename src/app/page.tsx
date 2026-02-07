@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import BikeCard from "@/components/BikeCard";
 import BrandFilter from "@/components/BrandFilter";
-// import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
 
 async function getBikes(searchParams: { brand?: string; search?: string }) {
   const { brand, search } = searchParams;
@@ -55,7 +55,7 @@ export default async function HomePage({ searchParams }: any) {
       </div>
 
       {/* Hero Section */}
-      <div className="bg-blue-600 py-16 px-4 text-center text-white">
+      <div className="bg-blue-600 py-16 mt-4 px-4 text-center text-white">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
           Rent Your Dream Bike Today
         </h1>

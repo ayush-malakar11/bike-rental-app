@@ -59,6 +59,12 @@ export default function Navbar() {
                     {session ? (
                         <>
                             <Link href="/dashboard" className="block py-2" onClick={() => setIsOpen(false)}>My Bookings</Link>
+                            {session.user?.role === "ADMIN" && (
+                                <>
+                                    <Link href="/admin/add-bike" className={isActive("/admin/add-bike")}>Add Bike</Link>
+                                    <Link href="/admin/bookings" className={isActive("/admin/bookings")}>All Bookings</Link>
+                                </>
+                            )}
                             <button onClick={() => signOut()} className="text-red-500 block py-2">Logout</button>
                         </>
                     ) : (
